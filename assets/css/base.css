@@ -1,0 +1,87 @@
+:root {
+    --bg-color: #6d6d6d;
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --text-color: #ffffff;
+    --active-bg: rgba(255, 255, 255, 0.2);
+    --muted-text: rgba(255, 255, 255, 0.7);
+    --accent: #ffffff;
+    --shadow-strong: rgba(0, 0, 0, 0.35);
+    --shadow-soft: rgba(0, 0, 0, 0.2);
+    --font-main: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --panel-radius: 36px;
+    --sidebar-width: clamp(280px, 36vw, 440px);
+    --sidebar-height: clamp(420px, 86vh, 760px);
+    --sidebar-pad-y: clamp(20px, 3.2vh, 38px);
+    --sidebar-pad-x: clamp(16px, 3vw, 28px);
+    --logo-gap: clamp(16px, 3.4vh, 34px);
+    --menu-gap: clamp(6px, 1.4vh, 12px);
+    --menu-radius: 18px;
+    --menu-pad-y: clamp(8px, 1.6vh, 12px);
+    --menu-pad-x: clamp(12px, 2.2vw, 18px);
+    --menu-font-size: clamp(14px, 2.2vh, 20px);
+    --menu-font-weight: 600;
+    --menu-icon-size: clamp(22px, 3vh, 30px);
+    --menu-icon-radius: 10px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+body {
+    overflow: hidden;
+}
+
+.page {
+    min-height: 100vh;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #7a7a7a 0%, #4a4a4a 100%);
+    z-index: -1;
+}
+
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--panel-radius);
+    box-shadow: 0 14px 40px var(--shadow-strong);
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    font-family: inherit;
+}

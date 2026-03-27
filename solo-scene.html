@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOIS GUI - Solo Scene</title>
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="stylesheet" href="assets/css/components.css" />
+    <link rel="stylesheet" href="assets/css/pages.css" />
+</head>
+<body class="page fade-in" data-page="solo-scene">
+    <div class="background"></div>
+    <main class="content-screen">
+        <div class="content-header">
+            <h1>Solo Scene</h1>
+            <a class="btn btn-primary" href="main-menu.html">Back</a>
+        </div>
+        <div class="placeholder-panel">
+            <h2>Scene Controls</h2>
+            <div class="control-group" data-slider>
+                <label class="control-label">Lighting Intensity</label>
+                <input type="range" class="slider" min="0" max="100" value="50" />
+                <span class="badge" data-output></span>
+            </div>
+            <div class="control-group" data-slider>
+                <label class="control-label">Camera Distance</label>
+                <input type="range" class="slider" min="0" max="100" value="70" />
+                <span class="badge" data-output></span>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Environment</label>
+                <div class="button-group">
+                    <button class="btn">Studio</button>
+                    <button class="btn">Outdoor</button>
+                    <button class="btn">Abstract</button>
+                    <button class="btn">Custom</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

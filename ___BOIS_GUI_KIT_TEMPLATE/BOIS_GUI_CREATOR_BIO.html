@@ -1,0 +1,2372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOIS GUI Template Create a Boi</title>
+    <style>
+        :root {
+            --bg-color: #5f5f5f;
+            --bg-dark: #1b1b1b;
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-bg-strong: rgba(255, 255, 255, 0.18);
+            --glass-border: rgba(255, 255, 255, 0.28);
+            --text-color: #ffffff;
+            --muted-text: rgba(255, 255, 255, 0.7);
+            --active-bg: rgba(255, 255, 255, 0.9);
+            --active-text: #232323;
+            --shadow-strong: rgba(0, 0, 0, 0.35);
+            --font-main: "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+            --font-tech: "JetBrains Mono", "SF Mono", monospace;
+            --radius-xl: 30px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-pill: 999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: var(--font-main);
+            color: var(--text-color);
+            background: var(--bg-color);
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        .background {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.14), transparent 38%),
+                radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.1), transparent 35%),
+                radial-gradient(circle at 70% 85%, rgba(0, 0, 0, 0.22), transparent 45%),
+                linear-gradient(135deg, #737373 0%, #3f3f3f 45%, #262626 100%);
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 14px 36px var(--shadow-strong);
+        }
+
+        .sidebar {
+            border-radius: var(--radius-xl);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .terminal-head {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            font-family: var(--font-tech);
+        }
+
+        .terminal-head h1 {
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 3px;
+        }
+
+        .terminal-head p {
+            margin-top: 4px;
+            font-size: 10px;
+            color: var(--muted-text);
+        }
+
+        .side-nav {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 11px;
+            letter-spacing: 0.4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--muted-text);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .nav-item:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-item.is-active {
+            background: var(--active-bg);
+            color: var(--active-text);
+            font-weight: 700;
+        }
+
+        .side-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .btn {
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            color: #fff;
+            border-radius: var(--radius-pill);
+            background: rgba(255, 255, 255, 0.12);
+            cursor: pointer;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.92);
+            color: #1f1f1f;
+            border-color: rgba(255, 255, 255, 0.92);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .main {
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .liquid-nav {
+            border-radius: var(--radius-pill);
+            padding: 8px;
+            display: inline-flex;
+            align-self: center;
+            gap: 6px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .liquid-item {
+            padding: 10px 18px;
+            border-radius: var(--radius-pill);
+            white-space: nowrap;
+            color: var(--muted-text);
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .liquid-item:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .liquid-item.is-active {
+            color: var(--active-text);
+            background: var(--active-bg);
+        }
+
+        .content-scroll {
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .content-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+        }
+
+        .panel {
+            border-radius: var(--radius-xl);
+            padding: 18px;
+        }
+
+        .panel h2 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .panel-subtitle {
+            margin-top: -4px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: var(--muted-text);
+        }
+
+        .kit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .kit-extras {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .kit-card {
+            padding: 14px;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .kit-label {
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted-text);
+            font-family: var(--font-tech);
+        }
+
+        .inline-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toggle {
+            position: relative;
+            width: 58px;
+            height: 30px;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .toggle::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            transition: 0.2s ease;
+        }
+
+        .toggle.is-active::before {
+            transform: translateX(28px);
+        }
+
+        .input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 12px;
+            color: #fff;
+            outline: none;
+        }
+
+        .tabs {
+            display: flex;
+            padding: 4px;
+            gap: 4px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: var(--muted-text);
+            cursor: pointer;
+        }
+
+        .tab.is-active {
+            background: rgba(255, 255, 255, 0.18);
+            color: #fff;
+        }
+
+        .progress {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.12);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.55));
+            transition: width 0.4s ease;
+        }
+
+        .creator {
+            border-radius: var(--radius-xl);
+            padding: 16px;
+        }
+
+        .creator-top {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .creator-top h3 {
+            font-size: 18px;
+        }
+
+        .creator-top p {
+            font-size: 12px;
+            color: var(--muted-text);
+            margin-top: 4px;
+        }
+
+        .creator-tools {
+            display: inline-flex;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .creator-tool {
+            width: 30px;
+            height: 30px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .creator-layout {
+            display: grid;
+            grid-template-columns: minmax(210px, 260px) 1fr minmax(210px, 260px);
+            gap: 12px;
+            min-height: 520px;
+        }
+
+        .creator-panel {
+            border-radius: var(--radius-lg);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .group h4 {
+            font-size: 11px;
+            color: var(--muted-text);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .selector-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .selector {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .selector.is-active {
+            background: var(--active-bg);
+            color: var(--active-text);
+        }
+
+        .pill {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 10px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .preview {
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+            padding: 12px;
+        }
+
+        .radar {
+            position: relative;
+            width: min(460px, 100%);
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radar-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .radar-axis {
+            position: absolute;
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--muted-text);
+            font-family: var(--font-tech);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .node-anchor {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .node-handle {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+            background: rgba(255, 255, 255, 0.14);
+            box-shadow: 0 0 24px rgba(255, 255, 255, 0.24);
+            cursor: grab;
+            transform: translate(-50%, -50%);
+        }
+
+        .node-handle:active {
+            cursor: grabbing;
+        }
+
+        .hud {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.22);
+            border-radius: 12px;
+            padding: 8px;
+            font-size: 11px;
+            font-family: var(--font-tech);
+            display: grid;
+            gap: 4px;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .preset {
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+        }
+
+        .preset.is-active {
+            border-color: rgba(255, 255, 255, 0.95);
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.58);
+        }
+
+        .dna-matrix {
+            height: 70px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 8px;
+        }
+
+        .dna-bar {
+            flex: 1;
+            min-width: 3px;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 1px;
+            transition: height 0.15s linear;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+        }
+
+        .metric strong {
+            font-family: var(--font-tech);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .control-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .control-box {
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 10px;
+        }
+
+        .dpad {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+        }
+
+        .dpad-base {
+            position: absolute;
+            inset: 0;
+            border-radius: 28px;
+            transform: rotate(45deg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .dpad-btn {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .dpad-btn.is-pressed {
+            background: rgba(255, 255, 255, 0.28);
+            transform: scale(0.94);
+        }
+
+        .dpad-up.is-pressed { transform: translateX(-50%) scale(0.94); }
+        .dpad-down.is-pressed { transform: translateX(-50%) scale(0.94); }
+        .dpad-left.is-pressed { transform: translateY(-50%) scale(0.94); }
+        .dpad-right.is-pressed { transform: translateY(-50%) scale(0.94); }
+
+        .dpad-up { top: 6px; left: 50%; transform: translateX(-50%); }
+        .dpad-down { bottom: 6px; left: 50%; transform: translateX(-50%); }
+        .dpad-left { left: 6px; top: 50%; transform: translateY(-50%); }
+        .dpad-right { right: 6px; top: 50%; transform: translateY(-50%); }
+
+        .dpad-ok {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .media-cluster {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .media-main,
+        .media-sub {
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .media-main {
+            width: 72px;
+            height: 72px;
+            font-size: 22px;
+        }
+
+        .media-sub {
+            width: 42px;
+            height: 42px;
+        }
+
+        .stepper-wrap {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .stepper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 16px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .step-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 0;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .dial-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .dial {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.24), rgba(0,0,0,0.12));
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dial::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 12%;
+            width: 4px;
+            height: 12px;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .dial.is-active::after {
+            top: auto;
+            bottom: 12%;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .creator-bottom {
+            margin-top: 10px;
+            display: flex;
+            gap: 6px;
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            overflow-x: auto;
+        }
+
+        .creator-tab {
+            padding: 8px 14px;
+            border-radius: 10px;
+            color: var(--muted-text);
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        .creator-tab.is-active {
+            background: var(--active-bg);
+            color: var(--active-text);
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: var(--glass-bg-strong);
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .overflow-wrap {
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .overflow-menu {
+            position: absolute;
+            top: 44px;
+            right: 0;
+            min-width: 190px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(35, 35, 35, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 6px;
+            display: none;
+            z-index: 20;
+        }
+
+        .overflow-menu.is-open {
+            display: grid;
+            gap: 4px;
+        }
+
+        .overflow-item {
+            border-radius: 10px;
+            padding: 9px 10px;
+            font-size: 12px;
+            color: var(--muted-text);
+            cursor: pointer;
+        }
+
+        .overflow-item:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .rich-editor {
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .rich-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .tool-pill {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .tool-pill.is-active {
+            background: rgba(255, 255, 255, 0.92);
+            color: #1f1f1f;
+        }
+
+        .rich-content {
+            min-height: 120px;
+            padding: 12px;
+            font-size: 13px;
+            line-height: 1.45;
+            color: rgba(255, 255, 255, 0.92);
+            outline: none;
+        }
+
+        .widget-board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .widget {
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 10px;
+            min-height: 90px;
+        }
+
+        .widget h5 {
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted-text);
+            margin-bottom: 6px;
+        }
+
+        .segmented {
+            display: inline-flex;
+            gap: 4px;
+            padding: 4px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .segment {
+            font-size: 11px;
+            padding: 7px 10px;
+            border-radius: 9px;
+            color: var(--muted-text);
+            cursor: pointer;
+        }
+
+        .segment.is-active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #202020;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .chip {
+            padding: 6px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--muted-text);
+            cursor: pointer;
+        }
+
+        .chip.is-active {
+            color: #202020;
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .mini-side {
+            display: grid;
+            gap: 6px;
+        }
+
+        .mini-link {
+            border-radius: 9px;
+            padding: 7px 9px;
+            font-size: 11px;
+            color: var(--muted-text);
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .mini-link.is-active {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mini-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .mini-day {
+            aspect-ratio: 1 / 1;
+            border-radius: 6px;
+            display: grid;
+            place-items: center;
+            font-size: 10px;
+            color: var(--muted-text);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .mini-day.is-active {
+            color: #202020;
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .vision-dock {
+            position: sticky;
+            bottom: 0;
+            margin-top: 2px;
+            align-self: center;
+            display: inline-flex;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            background: rgba(30, 30, 30, 0.42);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .dock-app {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.15s ease;
+        }
+
+        .dock-app:hover {
+            transform: translateY(-2px);
+        }
+
+        .dock-app.is-active {
+            background: rgba(255, 255, 255, 0.92);
+            color: #202020;
+        }
+
+        @keyframes floatSoft {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -120% 0; }
+            100% { background-position: 220% 0; }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 24px rgba(255, 255, 255, 0.2); }
+        }
+
+        .vision-stage {
+            border-radius: 36px;
+            position: relative;
+            overflow: hidden;
+            padding: 18px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.06));
+        }
+
+        .vision-shell {
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            padding: 14px;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 12px;
+            min-height: 700px;
+        }
+
+        .vision-head {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .vision-brand {
+            font-size: 54px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            line-height: 0.95;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .vision-window-controls {
+            display: inline-flex;
+            gap: 12px;
+            margin-left: 6px;
+        }
+
+        .vision-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.34);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .vision-top-meta {
+            justify-self: end;
+            display: inline-flex;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted-text);
+        }
+
+        .vision-main {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 12px;
+            min-height: 0;
+        }
+
+        .vision-left,
+        .vision-right {
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 10px;
+            min-height: 0;
+            overflow: auto;
+        }
+
+        .vision-left::-webkit-scrollbar,
+        .vision-right::-webkit-scrollbar,
+        .preset-rail::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .vision-left::-webkit-scrollbar-thumb,
+        .vision-right::-webkit-scrollbar-thumb,
+        .preset-rail::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+        }
+
+        .vision-menu {
+            display: grid;
+            gap: 8px;
+        }
+
+        .vision-menu-item {
+            display: grid;
+            grid-template-columns: 26px 1fr;
+            align-items: center;
+            gap: 10px;
+            border-radius: 999px;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 15px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .vision-menu-item:hover {
+            transform: translateX(2px);
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .vision-menu-item.is-active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1f1f1f;
+        }
+
+        .vision-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.16);
+            display: grid;
+            place-items: center;
+            font-size: 12px;
+        }
+
+        .vision-viewport {
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background:
+                radial-gradient(circle at 50% 22%, rgba(255, 255, 255, 0.36), transparent 34%),
+                radial-gradient(circle at 10% 80%, rgba(0, 0, 0, 0.3), transparent 40%),
+                linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+            padding: 12px;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 10px;
+            min-height: 0;
+        }
+
+        .vision-toolbar {
+            justify-self: center;
+            display: inline-flex;
+            gap: 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px;
+        }
+
+        .vision-toolbar button {
+            width: 30px;
+            height: 30px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .vision-scene {
+            position: relative;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            min-height: 420px;
+        }
+
+        .vision-scene::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.26) 50%, transparent 65%);
+            background-size: 220% 100%;
+            animation: shimmer 5s linear infinite;
+            pointer-events: none;
+        }
+
+        .studio-light {
+            position: absolute;
+            width: 120px;
+            height: 220px;
+            border-radius: 60px;
+            background: rgba(0, 0, 0, 0.28);
+            filter: blur(1px);
+        }
+
+        .studio-light.l1 { left: 12%; bottom: 24%; }
+        .studio-light.l2 { right: 14%; bottom: 26%; }
+        .studio-light.l3 { left: 50%; transform: translateX(-50%); bottom: 18%; }
+
+        .boi-avatar {
+            position: relative;
+            width: min(340px, 62%);
+            aspect-ratio: 3 / 5;
+            border-radius: 999px 999px 30% 30% / 45% 45% 30% 30%;
+            background:
+                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.22) 40%, rgba(0, 0, 0, 0.18) 100%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(40, 40, 40, 0.4));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: -10px;
+            animation: floatSoft 4.6s ease-in-out infinite;
+        }
+
+        .boi-avatar::before,
+        .boi-avatar::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.26);
+        }
+
+        .boi-avatar::before {
+            width: 48%;
+            height: 18%;
+            left: 26%;
+            top: 15%;
+        }
+
+        .boi-avatar::after {
+            width: 62%;
+            height: 36%;
+            left: 19%;
+            top: 34%;
+        }
+
+        .scene-status {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            display: inline-flex;
+            gap: 6px;
+        }
+
+        .scene-chip {
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            padding: 6px 10px;
+            font-size: 11px;
+            background: rgba(0, 0, 0, 0.22);
+            color: #fff;
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.92);
+            margin-bottom: 8px;
+        }
+
+        .accordion-block {
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.16);
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .accordion-head {
+            width: 100%;
+            border: 0;
+            background: none;
+            color: #fff;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .accordion-body {
+            display: none;
+            padding: 0 12px 12px;
+        }
+
+        .accordion-block.is-open .accordion-body {
+            display: block;
+        }
+
+        .control-line {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--muted-text);
+        }
+
+        .control-line strong {
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .mini-slider {
+            width: 100%;
+            appearance: none;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+
+        .mini-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .toggle-sm {
+            width: 44px;
+            height: 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(255, 255, 255, 0.14);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .toggle-sm::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            transition: 0.2s ease;
+        }
+
+        .toggle-sm.is-active::before {
+            transform: translateX(20px);
+        }
+
+        .preset-rail {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-height: 320px;
+            overflow: auto;
+            padding-right: 2px;
+        }
+
+        .preset-thumb {
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.36);
+            background:
+                radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1) 50%),
+                linear-gradient(145deg, rgba(255, 255, 255, 0.28), rgba(0, 0, 0, 0.22));
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .preset-thumb:hover {
+            transform: scale(1.04);
+        }
+
+        .preset-thumb.is-active {
+            border-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.28);
+            animation: pulseGlow 1.8s ease-in-out infinite;
+        }
+
+        .vision-bottom {
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .timeline-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .timeline-track {
+            position: relative;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            overflow: hidden;
+        }
+
+        .timeline-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 18%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
+        }
+
+        .transport-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .transport-buttons {
+            display: inline-flex;
+            gap: 6px;
+        }
+
+        .transport-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .transport-btn.is-active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1f1f1f;
+        }
+
+        .vision-actions {
+            display: inline-flex;
+            gap: 8px;
+        }
+
+        .vision-action {
+            min-width: 112px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .vision-action.primary {
+            background: rgba(255, 255, 255, 0.94);
+            color: #1f1f1f;
+        }
+
+        .bottom-tabs {
+            display: inline-flex;
+            gap: 4px;
+            padding: 4px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            background: rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        .bottom-tab {
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 12px;
+            color: var(--muted-text);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .bottom-tab.is-active {
+            background: rgba(255, 255, 255, 0.92);
+            color: #1f1f1f;
+        }
+
+        @media (max-width: 1300px) {
+            .creator-layout {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+
+            .preview {
+                min-height: 420px;
+            }
+
+            .vision-main {
+                grid-template-columns: 1fr;
+            }
+
+            .vision-shell {
+                min-height: 0;
+            }
+
+            .vision-left,
+            .vision-right {
+                max-height: 220px;
+            }
+
+            .transport-row {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+        }
+
+        @media (max-width: 980px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                max-height: 260px;
+            }
+
+            .creator-top {
+                grid-template-columns: 1fr;
+                justify-items: start;
+            }
+
+            .vision-brand {
+                font-size: 40px;
+            }
+
+            .vision-head {
+                grid-template-columns: 1fr;
+                justify-items: start;
+            }
+
+            .timeline-row {
+                grid-template-columns: 1fr;
+            }
+
+            .vision-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .vision-action {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .widget-board {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .shell {
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .vision-stage {
+                padding: 10px;
+                border-radius: 20px;
+            }
+
+            .vision-shell {
+                border-radius: 16px;
+                padding: 8px;
+            }
+
+            .boi-avatar {
+                width: min(280px, 76%);
+            }
+
+            .vision-menu-item {
+                font-size: 13px;
+            }
+
+            .fab {
+                width: 46px;
+                height: 46px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+
+    <div class="shell">
+        <aside class="sidebar glass">
+            <div class="terminal-head">
+                <h1>B器I Character Editor</h1>
+                <p>MOTOR_PROCEDURAL_綴</p>
+            </div>
+            <nav class="side-nav" data-nav="side">
+                <div class="nav-item is-active">ESTRUCTURA_BASE <span>01</span></div>
+                <div class="nav-item">MORFOLOGÍA_DNA <span>02</span></div>
+                <div class="nav-item">SÍNTESIS_ÓSEA <span>03</span></div>
+                <div class="nav-item">VESTIMENTA_MOD <span>04</span></div>
+                <div class="nav-item">AJUSTES_CÉLULA <span>05</span></div>
+            </nav>
+            <div class="side-footer">
+                <button class="btn btn-primary btn-block" type="button">SINTETIZAR ENTIDAD</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <nav class="liquid-nav glass" data-nav="top">
+                <div class="liquid-item is-active">Dashboard</div>
+                <div class="liquid-item">Creator</div>
+                <div class="liquid-item">Toolkit</div>
+                <div class="liquid-item">Presets</div>
+                <div class="liquid-item">Render</div>
+            </nav>
+
+            <div class="content-scroll">
+                <section class="panel glass">
+                    <h2>UI Components Unificados</h2>
+                    <p class="panel-subtitle">Liquid glass, side navigation, overflow menu, widgets web y rich text details.</p>
+                    <div class="kit-grid">
+                        <article class="kit-card">
+                            <span class="kit-label">Buttons</span>
+                            <div class="inline-row">
+                                <button class="btn" type="button">Default</button>
+                                <button class="btn btn-primary" type="button">Primary</button>
+                            </div>
+                        </article>
+
+                        <article class="kit-card">
+                            <span class="kit-label">Toggles</span>
+                            <div class="inline-row" style="justify-content: space-between;">
+                                <span>Auto Save</span>
+                                <button class="toggle" type="button" aria-pressed="false"></button>
+                            </div>
+                            <div class="inline-row" style="justify-content: space-between;">
+                                <span>Notifications</span>
+                                <button class="toggle is-active" type="button" aria-pressed="true"></button>
+                            </div>
+                        </article>
+
+                        <article class="kit-card">
+                            <span class="kit-label">Inputs</span>
+                            <input class="input" type="text" placeholder="Nombre de preset" />
+                            <input class="input" type="text" placeholder="Tag técnico" />
+                        </article>
+
+                        <article class="kit-card">
+                            <span class="kit-label">Tabs</span>
+                            <div class="tabs" data-tabs>
+                                <div class="tab is-active">Home</div>
+                                <div class="tab">Code</div>
+                                <div class="tab">Preview</div>
+                            </div>
+                        </article>
+
+                        <article class="kit-card">
+                            <span class="kit-label">Progress</span>
+                            <div class="progress" data-value="74">
+                                <div class="metric"><span>Densidad</span><strong>74%</strong></div>
+                                <div class="progress-bar"><div class="progress-fill"></div></div>
+                            </div>
+                            <div class="progress" data-value="32">
+                                <div class="metric"><span>Tensión</span><strong>32%</strong></div>
+                                <div class="progress-bar"><div class="progress-fill"></div></div>
+                            </div>
+                        </article>
+
+                        <article class="kit-card">
+                            <span class="kit-label">Card / Notice</span>
+                            <div style="font-size: 13px; color: var(--muted-text); line-height: 1.4;">
+                                Componente glass para mensajes, mini reportes y widgets de estado.
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="kit-extras">
+                        <article class="kit-card">
+                            <div class="overflow-wrap" data-overflow>
+                                <button class="icon-btn" type="button" aria-label="Abrir menú">⋯</button>
+                                <div class="overflow-menu">
+                                    <div class="overflow-item">Duplicar módulo</div>
+                                    <div class="overflow-item">Bloquear panel</div>
+                                    <div class="overflow-item">Compartir preset</div>
+                                    <div class="overflow-item">Eliminar componente</div>
+                                </div>
+                            </div>
+                            <span class="kit-label">Overflow Liquid Menu</span>
+                            <div class="segmented" data-segmented>
+                                <div class="segment is-active">Grid</div>
+                                <div class="segment">Split</div>
+                                <div class="segment">Focus</div>
+                            </div>
+                            <div class="chip-row" data-chips>
+                                <div class="chip is-active">Glass</div>
+                                <div class="chip">Neo</div>
+                                <div class="chip">Radial</div>
+                                <div class="chip">Vision</div>
+                            </div>
+                        </article>
+
+                        <article class="kit-card">
+                            <span class="kit-label">Rich Text UI Details</span>
+                            <div class="rich-editor">
+                                <div class="rich-toolbar" data-tools>
+                                    <button class="tool-pill" type="button">B</button>
+                                    <button class="tool-pill" type="button">I</button>
+                                    <button class="tool-pill" type="button">U</button>
+                                    <button class="tool-pill is-active" type="button">H1</button>
+                                    <button class="tool-pill" type="button">• List</button>
+                                </div>
+                                <div class="rich-content" contenteditable="true">Notas de síntesis: ajustar rasgos principales, guardar seed y validar estabilidad antes de exportar.</div>
+                            </div>
+                        </article>
+
+                        <article class="kit-card">
+                            <span class="kit-label">Universal Widgets</span>
+                            <div class="widget-board">
+                                <div class="widget">
+                                    <h5>Side Navigation</h5>
+                                    <div class="mini-side" data-mini-nav>
+                                        <div class="mini-link is-active">General</div>
+                                        <div class="mini-link">Layers</div>
+                                        <div class="mini-link">Physics</div>
+                                    </div>
+                                </div>
+                                <div class="widget">
+                                    <h5>Calendar</h5>
+                                    <div class="mini-calendar" data-calendar>
+                                        <div class="mini-day">12</div>
+                                        <div class="mini-day">13</div>
+                                        <div class="mini-day is-active">14</div>
+                                        <div class="mini-day">15</div>
+                                        <div class="mini-day">16</div>
+                                        <div class="mini-day">17</div>
+                                        <div class="mini-day">18</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="creator glass">
+                    <div class="creator-top">
+                        <div>
+                            <h3>B器IS_ Creator Studio</h3>
+                            <p>Template único con nodos radiales, controles y presets funcionales.</p>
+                        </div>
+                        <div class="creator-tools">
+                            <button class="creator-tool" type="button">◎</button>
+                            <button class="creator-tool" type="button">✦</button>
+                            <button class="creator-tool" type="button">↺</button>
+                        </div>
+                        <button class="btn btn-primary" type="button">Save Preset</button>
+                    </div>
+
+                    <div class="creator-layout">
+                        <aside class="creator-panel glass">
+                            <div class="group">
+                                <h4>Perfil</h4>
+                                <div class="selector-row" data-group>
+                                    <button class="selector" type="button">A</button>
+                                    <button class="selector is-active" type="button">B</button>
+                                    <button class="selector" type="button">C</button>
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <h4>Identidad</h4>
+                                <div class="selector-row" data-group>
+                                    <button class="selector" type="button">M</button>
+                                    <button class="selector is-active" type="button">F</button>
+                                    <button class="selector" type="button">X</button>
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <h4>Vestimenta</h4>
+                                <div class="pill">Superior <span>✔</span></div>
+                                <div class="pill">Inferior <span>✔</span></div>
+                            </div>
+
+                            <div class="group">
+                                <h4>Controles</h4>
+                                <div class="control-grid">
+                                    <div class="control-box">
+                                        <div class="dpad">
+                                            <div class="dpad-base"></div>
+                                            <button class="dpad-btn dpad-up" type="button" aria-label="Arriba">▲</button>
+                                            <button class="dpad-btn dpad-down" type="button" aria-label="Abajo">▼</button>
+                                            <button class="dpad-btn dpad-left" type="button" aria-label="Izquierda">◀</button>
+                                            <button class="dpad-btn dpad-right" type="button" aria-label="Derecha">▶</button>
+                                            <button class="dpad-ok" type="button">OK</button>
+                                        </div>
+                                    </div>
+                                    <div class="control-box">
+                                        <div class="media-cluster">
+                                            <button class="media-sub" type="button">⏮</button>
+                                            <button class="media-main" type="button">▶</button>
+                                            <button class="media-sub" type="button">⏭</button>
+                                        </div>
+                                        <div class="stepper-wrap" style="margin-top: 10px;">
+                                            <div class="stepper">
+                                                <button class="step-btn" type="button" data-step="up" data-target="muscle">+</button>
+                                                <strong id="muscle">54</strong>
+                                                <button class="step-btn" type="button" data-step="down" data-target="muscle">-</button>
+                                            </div>
+                                            <div class="stepper">
+                                                <button class="step-btn" type="button" data-step="up" data-target="vascular">+</button>
+                                                <strong id="vascular">12</strong>
+                                                <button class="step-btn" type="button" data-step="down" data-target="vascular">-</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="control-box">
+                                        <div class="dial-row">
+                                            <div class="dial" data-dial></div>
+                                            <div class="dial is-active" data-dial></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <section class="preview">
+                            <div class="hud">
+                                <div>MORFO: <strong id="morph">ANDRÓGINO</strong></div>
+                                <div>DENS: <strong id="dens">42.8%</strong></div>
+                                <div>TENS: <strong id="tens">BAJA</strong></div>
+                            </div>
+
+                            <div class="radar" id="radar">
+                                <div class="radar-ring" style="width: 28%; height: 28%;"></div>
+                                <div class="radar-ring" style="width: 54%; height: 54%;"></div>
+                                <div class="radar-ring" style="width: 80%; height: 80%;"></div>
+
+                                <div class="radar-axis" style="top: -26px; left: 50%; transform: translateX(-50%);">Estructura_Ósea</div>
+                                <div class="radar-axis" style="bottom: -26px; left: 50%; transform: translateX(-50%);">Masa_Adiposa</div>
+                                <div class="radar-axis" style="left: -80px; top: 50%; transform: translateY(-50%) rotate(-90deg);">Rigidez</div>
+                                <div class="radar-axis" style="right: -80px; top: 50%; transform: translateY(-50%) rotate(90deg);">Suavidad</div>
+
+                                <div class="node-anchor" style="left: 50%; top: 0; transform: translateX(-50%);"></div>
+                                <div class="node-anchor" style="left: 50%; bottom: 0; transform: translateX(-50%);"></div>
+                                <div class="node-anchor" style="left: 0; top: 50%; transform: translateY(-50%);"></div>
+                                <div class="node-anchor" style="right: 0; top: 50%; transform: translateY(-50%);"></div>
+
+                                <div class="node-handle" id="node-handle" style="left: 50%; top: 50%;"></div>
+                            </div>
+                        </section>
+
+                        <aside class="creator-panel glass">
+                            <div class="group">
+                                <h4>Presets</h4>
+                                <div class="presets-grid" data-presets>
+                                    <div class="preset"></div>
+                                    <div class="preset is-active"></div>
+                                    <div class="preset"></div>
+                                    <div class="preset"></div>
+                                    <div class="preset"></div>
+                                    <div class="preset"></div>
+                                    <div class="preset"></div>
+                                    <div class="preset"></div>
+                                    <div class="preset"></div>
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <h4>DNA Matrix</h4>
+                                <div class="dna-matrix" id="dna-matrix"></div>
+                            </div>
+
+                            <div class="group">
+                                <h4>Métricas</h4>
+                                <div class="metric"><span>Definición muscular</span><strong id="muscle-label">54%</strong></div>
+                                <div class="progress" data-bind="muscle">
+                                    <div class="progress-bar"><div class="progress-fill" style="width: 54%;"></div></div>
+                                </div>
+                                <div class="metric"><span>Prominencia vascular</span><strong id="vascular-label">12%</strong></div>
+                                <div class="progress" data-bind="vascular">
+                                    <div class="progress-bar"><div class="progress-fill" style="width: 12%;"></div></div>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+
+                    <div class="creator-bottom" data-creator-tabs>
+                        <div class="creator-tab is-active">Presets</div>
+                        <div class="creator-tab">Fisonomía</div>
+                        <div class="creator-tab">Estructura</div>
+                        <div class="creator-tab">Outfit</div>
+                        <div class="creator-tab">Módulos</div>
+                        <div class="creator-tab">Sintetizar</div>
+                    </div>
+                </section>
+
+                <section class="vision-stage glass">
+                    <div class="vision-shell">
+                        <header class="vision-head">
+                            <div style="display: inline-flex; align-items: center; gap: 14px;">
+                                <div class="vision-brand">BOIS</div>
+                                <div class="vision-window-controls" aria-hidden="true">
+                                    <span class="vision-dot"></span>
+                                    <span class="vision-dot"></span>
+                                    <span class="vision-dot"></span>
+                                </div>
+                            </div>
+                            <div class="vision-top-meta">Create a Zoi · Studio</div>
+                            <button class="icon-btn" type="button" aria-label="Close">✕</button>
+                        </header>
+
+                        <div class="vision-main">
+                            <aside class="vision-left">
+                                <div class="panel-title">Navegación</div>
+                                <div class="vision-menu" data-vision-menu>
+                                    <button class="vision-menu-item is-active" type="button"><span class="vision-icon">◌</span>Personaje</button>
+                                    <button class="vision-menu-item" type="button"><span class="vision-icon">↺</span>Animaciones</button>
+                                    <button class="vision-menu-item" type="button"><span class="vision-icon">▣</span>Props</button>
+                                    <button class="vision-menu-item" type="button"><span class="vision-icon">⌗</span>Entorno</button>
+                                    <button class="vision-menu-item" type="button"><span class="vision-icon">⚙</span>Biblioteca</button>
+                                    <button class="vision-menu-item" type="button"><span class="vision-icon">✦</span>Casting</button>
+                                </div>
+                            </aside>
+
+                            <section class="vision-viewport" data-parallax-wrap>
+                                <div class="vision-toolbar">
+                                    <button type="button" aria-label="Spark">✧</button>
+                                    <button type="button" aria-label="Cam">⌾</button>
+                                    <button type="button" aria-label="Rotate">↻</button>
+                                    <button type="button" aria-label="Undo">↶</button>
+                                </div>
+
+                                <div class="vision-scene">
+                                    <div class="scene-status">
+                                        <span class="scene-chip">Preview</span>
+                                        <span class="scene-chip">HD</span>
+                                    </div>
+                                    <span class="studio-light l1"></span>
+                                    <span class="studio-light l2"></span>
+                                    <span class="studio-light l3"></span>
+                                    <div class="boi-avatar" id="boi-avatar"></div>
+                                </div>
+                            </section>
+
+                            <aside class="vision-right">
+                                <div class="panel-title">Inspector</div>
+                                <div class="accordion-block is-open" data-accordion>
+                                    <button class="accordion-head" type="button">Morphs <span>▾</span></button>
+                                    <div class="accordion-body">
+                                        <div class="control-line"><span>Muscle Definition</span><strong data-slider-label="muscle2">72%</strong></div>
+                                        <input class="mini-slider" type="range" min="0" max="100" value="72" data-slider="muscle2" />
+                                        <div class="control-line"><span>Body Fat</span><strong data-slider-label="fat2">34%</strong></div>
+                                        <input class="mini-slider" type="range" min="0" max="100" value="34" data-slider="fat2" />
+                                        <div class="control-line"><span>Facial Gloss</span><strong data-slider-label="gloss2">18%</strong></div>
+                                        <input class="mini-slider" type="range" min="0" max="100" value="18" data-slider="gloss2" />
+                                    </div>
+                                </div>
+
+                                <div class="accordion-block is-open" data-accordion>
+                                    <button class="accordion-head" type="button">Texturas <span>▾</span></button>
+                                    <div class="accordion-body">
+                                        <div class="control-line"><span>Skin Slope</span><strong data-slider-label="skin2">44%</strong></div>
+                                        <input class="mini-slider" type="range" min="0" max="100" value="44" data-slider="skin2" />
+                                        <div class="control-line"><span>Procedural Noise</span><button class="toggle-sm is-active" type="button" aria-pressed="true"></button></div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-block" data-accordion>
+                                    <button class="accordion-head" type="button">Materiales <span>▾</span></button>
+                                    <div class="accordion-body">
+                                        <div class="control-line"><span>Gloss Boost</span><button class="toggle-sm" type="button" aria-pressed="false"></button></div>
+                                        <div class="control-line"><span>Subsurface</span><button class="toggle-sm is-active" type="button" aria-pressed="true"></button></div>
+                                    </div>
+                                </div>
+
+                                <div class="panel-title" style="margin-top: 10px;">Zoi Presets</div>
+                                <div class="preset-rail" data-vision-presets>
+                                    <button class="preset-thumb is-active" type="button" aria-label="Preset 1"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 2"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 3"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 4"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 5"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 6"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 7"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 8"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 9"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 10"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 11"></button>
+                                    <button class="preset-thumb" type="button" aria-label="Preset 12"></button>
+                                </div>
+                            </aside>
+                        </div>
+
+                        <footer class="vision-bottom">
+                            <div class="timeline-row">
+                                <button class="transport-btn" type="button" aria-label="Timeline backward">◁</button>
+                                <div class="timeline-track"><div class="timeline-fill" id="timeline-fill"></div></div>
+                                <button class="transport-btn" type="button" aria-label="Timeline forward">▷</button>
+                            </div>
+
+                            <div class="transport-row">
+                                <div class="transport-buttons">
+                                    <button class="transport-btn" type="button">◀◀</button>
+                                    <button class="transport-btn" type="button">◀</button>
+                                    <button class="transport-btn is-active" type="button" id="play-toggle">▶</button>
+                                    <button class="transport-btn" type="button">▶</button>
+                                    <button class="transport-btn" type="button">▶▶</button>
+                                </div>
+
+                                <nav class="bottom-tabs" data-bottom-tabs>
+                                    <div class="bottom-tab is-active">Zoi Presets</div>
+                                    <div class="bottom-tab">Face</div>
+                                    <div class="bottom-tab">Body</div>
+                                    <div class="bottom-tab">Outfit</div>
+                                    <div class="bottom-tab">Accessories</div>
+                                    <div class="bottom-tab">Craft</div>
+                                </nav>
+
+                                <div class="vision-actions">
+                                    <button class="vision-action" type="button">Save</button>
+                                    <button class="vision-action" type="button">Render</button>
+                                    <button class="vision-action primary" type="button">Complete</button>
+                                </div>
+                            </div>
+                        </footer>
+                    </div>
+                </section>
+            </div>
+
+            <div class="vision-dock" data-dock>
+                <button class="dock-app is-active" type="button" title="Dashboard">⌂</button>
+                <button class="dock-app" type="button" title="Nodes">◎</button>
+                <button class="dock-app" type="button" title="Assets">◈</button>
+                <button class="dock-app" type="button" title="Render">◍</button>
+                <button class="dock-app" type="button" title="Settings">⚙</button>
+            </div>
+        </main>
+    </div>
+
+    <button class="fab" type="button" aria-label="Nuevo">+</button>
+
+    <script>
+        const setActiveInContainer = (container, itemSelector, activeClass) => {
+            container.querySelectorAll(itemSelector).forEach((item) => {
+                item.addEventListener("click", () => {
+                    container.querySelectorAll(itemSelector).forEach((node) => node.classList.remove(activeClass));
+                    item.classList.add(activeClass);
+                });
+            });
+        };
+
+        document.querySelectorAll("[data-nav]").forEach((nav) => {
+            setActiveInContainer(nav, nav.dataset.nav === "side" ? ".nav-item" : ".liquid-item", "is-active");
+        });
+
+        document.querySelectorAll("[data-tabs]").forEach((tabs) => {
+            setActiveInContainer(tabs, ".tab", "is-active");
+        });
+
+        document.querySelectorAll(".toggle").forEach((toggle) => {
+            toggle.addEventListener("click", () => {
+                const state = toggle.classList.toggle("is-active");
+                toggle.setAttribute("aria-pressed", state ? "true" : "false");
+            });
+        });
+
+        document.querySelectorAll("[data-group]").forEach((group) => {
+            setActiveInContainer(group, ".selector", "is-active");
+        });
+
+        document.querySelectorAll("[data-presets]").forEach((grid) => {
+            setActiveInContainer(grid, ".preset", "is-active");
+        });
+
+        document.querySelectorAll("[data-creator-tabs]").forEach((tabs) => {
+            setActiveInContainer(tabs, ".creator-tab", "is-active");
+        });
+
+        document.querySelectorAll("[data-segmented]").forEach((segmented) => {
+            setActiveInContainer(segmented, ".segment", "is-active");
+        });
+
+        document.querySelectorAll("[data-mini-nav]").forEach((miniNav) => {
+            setActiveInContainer(miniNav, ".mini-link", "is-active");
+        });
+
+        document.querySelectorAll("[data-calendar]").forEach((calendar) => {
+            setActiveInContainer(calendar, ".mini-day", "is-active");
+        });
+
+        document.querySelectorAll("[data-chips]").forEach((chips) => {
+            chips.querySelectorAll(".chip").forEach((chip) => {
+                chip.addEventListener("click", () => {
+                    chip.classList.toggle("is-active");
+                });
+            });
+        });
+
+        document.querySelectorAll("[data-tools]").forEach((toolbar) => {
+            toolbar.querySelectorAll(".tool-pill").forEach((tool) => {
+                tool.addEventListener("click", () => {
+                    tool.classList.toggle("is-active");
+                });
+            });
+        });
+
+        document.querySelectorAll("[data-overflow]").forEach((container) => {
+            const trigger = container.querySelector(".icon-btn");
+            const menu = container.querySelector(".overflow-menu");
+            trigger.addEventListener("click", (event) => {
+                event.stopPropagation();
+                menu.classList.toggle("is-open");
+            });
+            menu.querySelectorAll(".overflow-item").forEach((item) => {
+                item.addEventListener("click", () => {
+                    menu.classList.remove("is-open");
+                });
+            });
+        });
+
+        window.addEventListener("click", () => {
+            document.querySelectorAll(".overflow-menu.is-open").forEach((menu) => menu.classList.remove("is-open"));
+        });
+
+        document.querySelectorAll("[data-dock]").forEach((dock) => {
+            setActiveInContainer(dock, ".dock-app", "is-active");
+        });
+
+        document.querySelectorAll("[data-vision-menu]").forEach((menu) => {
+            setActiveInContainer(menu, ".vision-menu-item", "is-active");
+        });
+
+        document.querySelectorAll("[data-bottom-tabs]").forEach((tabs) => {
+            setActiveInContainer(tabs, ".bottom-tab", "is-active");
+        });
+
+        document.querySelectorAll("[data-vision-presets]").forEach((grid) => {
+            setActiveInContainer(grid, ".preset-thumb", "is-active");
+        });
+
+        document.querySelectorAll("[data-accordion]").forEach((block) => {
+            const head = block.querySelector(".accordion-head");
+            head.addEventListener("click", () => {
+                block.classList.toggle("is-open");
+            });
+        });
+
+        document.querySelectorAll(".toggle-sm").forEach((toggle) => {
+            toggle.addEventListener("click", () => {
+                const state = toggle.classList.toggle("is-active");
+                toggle.setAttribute("aria-pressed", state ? "true" : "false");
+            });
+        });
+
+        document.querySelectorAll("input[data-slider]").forEach((slider) => {
+            const key = slider.dataset.slider;
+            const label = document.querySelector(`[data-slider-label=\"${key}\"]`);
+            const update = () => {
+                if (label) {
+                    label.textContent = `${slider.value}%`;
+                }
+            };
+            slider.addEventListener("input", update);
+            update();
+        });
+
+        const parallaxWrap = document.querySelector("[data-parallax-wrap]");
+        const boiAvatar = document.getElementById("boi-avatar");
+        if (parallaxWrap && boiAvatar) {
+            parallaxWrap.addEventListener("pointermove", (event) => {
+                const rect = parallaxWrap.getBoundingClientRect();
+                const px = (event.clientX - rect.left) / rect.width - 0.5;
+                const py = (event.clientY - rect.top) / rect.height - 0.5;
+                boiAvatar.style.transform = `translate(${px * 10}px, ${py * 6}px)`;
+            });
+            parallaxWrap.addEventListener("pointerleave", () => {
+                boiAvatar.style.transform = "translate(0,0)";
+            });
+        }
+
+        const timelineFill = document.getElementById("timeline-fill");
+        const playToggle = document.getElementById("play-toggle");
+        let timelineValue = 18;
+        let timelineTimer = null;
+
+        const drawTimeline = () => {
+            if (timelineFill) {
+                timelineFill.style.width = `${timelineValue}%`;
+            }
+        };
+
+        const stopTimeline = () => {
+            if (timelineTimer) {
+                window.clearInterval(timelineTimer);
+                timelineTimer = null;
+            }
+            if (playToggle) {
+                playToggle.classList.remove("is-active");
+            }
+        };
+
+        const startTimeline = () => {
+            stopTimeline();
+            if (playToggle) {
+                playToggle.classList.add("is-active");
+            }
+            timelineTimer = window.setInterval(() => {
+                timelineValue = timelineValue >= 100 ? 0 : timelineValue + 1;
+                drawTimeline();
+            }, 110);
+        };
+
+        if (playToggle) {
+            playToggle.addEventListener("click", () => {
+                if (timelineTimer) {
+                    stopTimeline();
+                } else {
+                    startTimeline();
+                }
+            });
+        }
+
+        drawTimeline();
+
+        document.querySelectorAll("[data-dial]").forEach((dial) => {
+            dial.addEventListener("click", () => {
+                dial.classList.toggle("is-active");
+            });
+        });
+
+        document.querySelectorAll(".dpad-btn, .dpad-ok").forEach((button) => {
+            button.addEventListener("pointerdown", () => button.classList.add("is-pressed"));
+            ["pointerup", "pointerleave", "pointercancel"].forEach((eventName) => {
+                button.addEventListener(eventName, () => button.classList.remove("is-pressed"));
+            });
+        });
+
+        const updateBoundValue = (id) => {
+            const valueNode = document.getElementById(id);
+            const labelNode = document.getElementById(`${id}-label`);
+            const value = Number(valueNode.textContent);
+            if (labelNode) {
+                labelNode.textContent = `${value}%`;
+            }
+            const bar = document.querySelector(`[data-bind=\"${id}\"] .progress-fill`);
+            if (bar) {
+                bar.style.width = `${value}%`;
+            }
+        };
+
+        document.querySelectorAll(".step-btn").forEach((button) => {
+            button.addEventListener("click", () => {
+                const targetId = button.dataset.target;
+                const target = document.getElementById(targetId);
+                if (!target) {
+                    return;
+                }
+                const current = Number(target.textContent);
+                const next = button.dataset.step === "up" ? Math.min(100, current + 1) : Math.max(0, current - 1);
+                target.textContent = String(next);
+                updateBoundValue(targetId);
+            });
+        });
+
+        document.querySelectorAll(".progress[data-value]").forEach((progress) => {
+            const value = Number(progress.getAttribute("data-value"));
+            const fill = progress.querySelector(".progress-fill");
+            if (fill) {
+                requestAnimationFrame(() => {
+                    fill.style.width = `${value}%`;
+                });
+            }
+        });
+
+        const dnaMatrix = document.getElementById("dna-matrix");
+        const makeBar = () => {
+            const bar = document.createElement("div");
+            bar.className = "dna-bar";
+            bar.style.height = `${20 + Math.random() * 80}%`;
+            dnaMatrix.appendChild(bar);
+        };
+
+        for (let i = 0; i < 32; i += 1) {
+            makeBar();
+        }
+
+        const pulseDNA = () => {
+            dnaMatrix.querySelectorAll(".dna-bar").forEach((bar) => {
+                bar.style.height = `${20 + Math.random() * 80}%`;
+                bar.style.background = `rgba(255,255,255,${0.12 + Math.random() * 0.35})`;
+            });
+        };
+
+        const radar = document.getElementById("radar");
+        const handle = document.getElementById("node-handle");
+        const morphNode = document.getElementById("morph");
+        const densNode = document.getElementById("dens");
+        const tensNode = document.getElementById("tens");
+        let dragging = false;
+
+        const updateFromPosition = (clientX, clientY) => {
+            const rect = radar.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const maxRadius = rect.width / 2;
+
+            let x = clientX - rect.left;
+            let y = clientY - rect.top;
+
+            const dx = x - centerX;
+            const dy = y - centerY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > maxRadius) {
+                const angle = Math.atan2(dy, dx);
+                x = centerX + maxRadius * Math.cos(angle);
+                y = centerY + maxRadius * Math.sin(angle);
+            }
+
+            handle.style.left = `${(x / rect.width) * 100}%`;
+            handle.style.top = `${(y / rect.height) * 100}%`;
+
+            const normX = (x - centerX) / maxRadius;
+            const normY = (y - centerY) / maxRadius;
+
+            densNode.textContent = `${Math.abs(normY * 100).toFixed(1)}%`;
+            morphNode.textContent = normX > 0.5 ? "ECTOMORFO" : normX < -0.5 ? "MESOMORFO" : "ANDRÓGINO";
+            tensNode.textContent = normY < -0.3 ? "ALTA" : "BAJA";
+
+            pulseDNA();
+        };
+
+        handle.addEventListener("pointerdown", (event) => {
+            dragging = true;
+            handle.setPointerCapture(event.pointerId);
+        });
+
+        window.addEventListener("pointerup", () => {
+            dragging = false;
+        });
+
+        window.addEventListener("pointermove", (event) => {
+            if (!dragging) {
+                return;
+            }
+            updateFromPosition(event.clientX, event.clientY);
+        });
+
+        updateBoundValue("muscle");
+        updateBoundValue("vascular");
+    </script>
+</body>
+</html>

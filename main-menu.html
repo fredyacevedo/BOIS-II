@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOIS GUI - Main Menu</title>
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="stylesheet" href="assets/css/components.css" />
+    <link rel="stylesheet" href="assets/css/pages.css" />
+    <script>
+        (function redirectFileProtocolToOfflineServer() {
+            if (window.location.protocol !== "file:") {
+                return;
+            }
+            const target = "http://127.0.0.1:8080/BOIS%20GUI/main-menu.html";
+            if (window.location.href !== target) {
+                window.location.replace(target);
+            }
+        })();
+    </script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../REPOSITORIES CODE TO USE/three.js-dev/build/three.module.js",
+                "three/addons/": "../REPOSITORIES CODE TO USE/three.js-dev/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body class="page fade-in" data-page="main-menu">
+    <div class="background"></div>
+    <main class="page-shell">
+        <aside class="sidebar glass-panel">
+            <div class="logo-container">
+                <img src="assets/svg/bois-logo.svg" alt="BOIS GUI" />
+            </div>
+            <div class="menu-items">
+                <a class="menu-item" href="new-experience.html" data-page="new-experience">
+                    <span class="kanji">箱</span>
+                    New experience
+                </a>
+                <a class="menu-item" href="solo-scene.html" data-page="solo-scene">
+                    <span class="kanji">瞬</span>
+                    Solo scene
+                </a>
+                <a class="menu-item" href="create-boi.html" data-page="create-boi">
+                    <span class="kanji">面</span>
+                    Create a BOI
+                </a>
+                <a class="menu-item" href="bois-library.html" data-page="bois-library">
+                    <span class="kanji">器</span>
+                    BOIS library
+                </a>
+                <a class="menu-item" href="shadow-archive.html" data-page="shadow-archive">
+                    <span class="kanji">影</span>
+                    Shadow archive
+                </a>
+                <a class="menu-item" href="toys.html" data-page="toys">
+                    <span class="kanji">具</span>
+                    Toys
+                </a>
+                <a class="menu-item" href="settings.html" data-page="settings">
+                    <span class="kanji">律</span>
+                    Settings
+                </a>
+                <a class="menu-item" href="ui-kit.html" data-page="ui-kit">
+                    <span class="kanji">式</span>
+                    UI Kit
+                </a>
+                <a class="menu-item" href="splash.html" data-page="splash">
+                    <span class="kanji">綻</span>
+                    Exit
+                </a>
+            </div>
+        </aside>
+
+        <section class="content-screen main-menu-preview-screen">
+            <div id="menu-boy-view" class="boi-view main-menu-deco-view" aria-label="Main menu 3D decoration"></div>
+        </section>
+    </main>
+    <script src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/main-menu-boy.js"></script>
+</body>
+</html>

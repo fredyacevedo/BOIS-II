@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOIS GUI - Create BOI</title>
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="stylesheet" href="assets/css/components.css" />
+    <link rel="stylesheet" href="assets/css/pages.css" />
+    <script>
+        (function redirectFileProtocolToOfflineServer() {
+            if (window.location.protocol !== "file:") {
+                return;
+            }
+            const target = "http://127.0.0.1:8080/BOIS%20GUI/create-boi.html";
+            if (window.location.href !== target) {
+                window.location.replace(target);
+            }
+        })();
+    </script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../REPOSITORIES CODE TO USE/three.js-dev/build/three.module.js",
+                "three/addons/": "../REPOSITORIES CODE TO USE/three.js-dev/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body class="page fade-in" data-page="create-boi">
+    <div class="background"></div>
+    <main class="content-screen boi-editor-screen">
+        <div class="content-header">
+            <h1>BOI Character Editor</h1>
+            <div class="boi-header-actions">
+                <span class="badge" id="boi-model-state">Cargando BOI_3D.fbx…</span>
+                <a class="btn btn-primary" href="main-menu.html">Back</a>
+            </div>
+        </div>
+        <div class="boi-editor-layout">
+            <section class="placeholder-panel boi-controls-panel">
+                <h2>Controles</h2>
+
+                <div class="control-group">
+                    <label class="control-label">Preset</label>
+                    <div class="segmented" id="boi-preset">
+                        <button class="is-active" type="button" data-preset="neutral">Neutral</button>
+                        <button type="button" data-preset="hero">Hero</button>
+                        <button type="button" data-preset="compact">Compact</button>
+                    </div>
+                </div>
+
+                <div class="control-group" data-slider>
+                    <label class="control-label" for="boi-scale">Escala</label>
+                    <div class="boi-control-row">
+                        <input id="boi-scale" type="range" class="slider" min="35" max="180" value="100" />
+                        <span class="badge" data-output>100</span>
+                    </div>
+                </div>
+
+                <div class="control-group" data-slider>
+                    <label class="control-label" for="boi-rotate">Rotación</label>
+                    <div class="boi-control-row">
+                        <input id="boi-rotate" type="range" class="slider" min="0" max="100" value="16" />
+                        <span class="badge" data-output>16</span>
+                    </div>
+                </div>
+
+                <div class="control-group" data-slider>
+                    <label class="control-label" for="boi-light">Luz</label>
+                    <div class="boi-control-row">
+                        <input id="boi-light" type="range" class="slider" min="20" max="220" value="115" />
+                        <span class="badge" data-output>115</span>
+                    </div>
+                </div>
+
+                <div class="control-group boi-switches">
+                    <button id="boi-rim-toggle" class="btn btn-pill" type="button">Rim light: ON</button>
+                    <button id="boi-wire-toggle" class="btn btn-pill btn-ghost" type="button">Wireframe: OFF</button>
+                </div>
+
+                <div class="control-group boi-switches">
+                    <button id="boi-load-local" class="btn btn-pill" type="button">Cargar modelo local (FBX/GLB)</button>
+                    <button id="boi-load-animation" class="btn btn-pill btn-ghost" type="button">Cargar animación (FBX/GLB)</button>
+                    <input id="boi-local-file" type="file" accept=".fbx,.glb,.gltf" hidden />
+                    <input id="boi-animation-file" type="file" accept=".fbx,.glb,.gltf,.bvh" multiple hidden />
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">BOI Catalog</h3>
+                    <div class="control-group">
+                        <label class="control-label" for="boi-catalog-model">Base Model (T-Pose)</label>
+                        <select id="boi-catalog-model" class="input-field"></select>
+                    </div>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-catalog-load-model" class="btn btn-pill" type="button">Load Selected BOI</button>
+                        <button id="boi-catalog-load-assigned" class="btn btn-pill btn-ghost" type="button">Load Assigned Animations</button>
+                    </div>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-catalog-import-folder" class="btn btn-pill btn-ghost" type="button">Import Local Folder Catalog</button>
+                        <button id="boi-catalog-reset-source" class="btn btn-pill btn-ghost" type="button">Use Manifest Catalog</button>
+                        <input id="boi-catalog-folder-input" type="file" webkitdirectory directory multiple hidden />
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="boi-catalog-animation">Animation Library</label>
+                        <select id="boi-catalog-animation" class="input-field"></select>
+                    </div>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-catalog-add-animation" class="btn btn-pill" type="button">Add Selected Animation</button>
+                        <button id="boi-catalog-add-all" class="btn btn-pill btn-ghost" type="button">Add Full Library</button>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Bio Snapshot</label>
+                        <pre id="boi-model-bio" class="boi-bio"></pre>
+                    </div>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">Scene</h3>
+                    <div class="control-group boi-switches">
+                        <button id="boi-env-toggle" class="btn btn-pill" type="button">Environment: OFF</button>
+                        <button id="boi-grid-toggle" class="btn btn-pill btn-ghost" type="button">Grid: ON</button>
+                        <button id="boi-ground-toggle" class="btn btn-pill btn-ghost" type="button">Ground: ON</button>
+                        <button id="boi-helpers-toggle" class="btn btn-pill btn-ghost" type="button">Unit Helpers: OFF</button>
+                        <button id="boi-light-rig-toggle" class="btn btn-pill btn-ghost" type="button">Turntable Lights: ON</button>
+                    </div>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">Animations</h3>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-play-toggle" class="btn btn-pill" type="button">Pause</button>
+                        <label class="boi-inline-check"><input id="boi-loop-toggle" type="checkbox" checked /> Loop</label>
+                        <span id="boi-time-readout" class="badge">0.00s / 0.00s</span>
+                    </div>
+                    <div class="control-group" data-slider>
+                        <label class="control-label" for="boi-speed">Playback Speed</label>
+                        <div class="boi-control-row">
+                            <input id="boi-speed" type="range" class="slider" min="10" max="200" value="100" />
+                            <span class="badge" data-output>100</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="boi-timeline">Timeline</label>
+                        <input id="boi-timeline" type="range" class="slider" min="0" max="1000" value="0" />
+                    </div>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-frame-prev" class="btn btn-pill btn-ghost" type="button">Step -1f</button>
+                        <button id="boi-frame-next" class="btn btn-pill btn-ghost" type="button">Step +1f</button>
+                    </div>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-add-layer" class="btn btn-pill" type="button">Add Layer</button>
+                        <button id="boi-clear-layers" class="btn btn-pill btn-ghost" type="button">Clear Layers</button>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Available Clips</label>
+                        <div id="boi-animation-list" class="boi-scroll-list"></div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Layer Stack</label>
+                        <div id="boi-layer-list" class="boi-scroll-list"></div>
+                    </div>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">Creator Deck</h3>
+                    <div class="control-group">
+                        <label class="control-label">BOIS_GUI_CREATOR_BIO Controls</label>
+                        <div class="boi-creator-control-grid">
+                            <div class="boi-dpad" aria-label="Navigation pad">
+                                <button id="boi-nav-up" type="button" class="btn btn-pill btn-ghost boi-dpad-btn boi-dpad-up">▲</button>
+                                <button id="boi-nav-left" type="button" class="btn btn-pill btn-ghost boi-dpad-btn boi-dpad-left">◀</button>
+                                <button id="boi-nav-center" type="button" class="btn btn-pill boi-dpad-btn boi-dpad-center">OK</button>
+                                <button id="boi-nav-right" type="button" class="btn btn-pill btn-ghost boi-dpad-btn boi-dpad-right">▶</button>
+                                <button id="boi-nav-down" type="button" class="btn btn-pill btn-ghost boi-dpad-btn boi-dpad-down">▼</button>
+                            </div>
+                            <div class="boi-media-cluster">
+                                <button id="boi-transport-prev" type="button" class="btn btn-pill btn-ghost">-1f</button>
+                                <button id="boi-transport-play" type="button" class="btn btn-pill">Play/Pause</button>
+                                <button id="boi-transport-next" type="button" class="btn btn-pill btn-ghost">+1f</button>
+                            </div>
+                            <div class="boi-stepper-wrap">
+                                <button id="boi-speed-down" type="button" class="btn btn-pill btn-ghost">Speed -</button>
+                                <button id="boi-speed-up" type="button" class="btn btn-pill btn-ghost">Speed +</button>
+                                <button id="boi-light-down" type="button" class="btn btn-pill btn-ghost">Light -</button>
+                                <button id="boi-light-up" type="button" class="btn btn-pill btn-ghost">Light +</button>
+                            </div>
+                            <div class="boi-dial-row">
+                                <button id="boi-scale-down" type="button" class="btn btn-pill btn-ghost">Scale -</button>
+                                <button id="boi-scale-up" type="button" class="btn btn-pill btn-ghost">Scale +</button>
+                                <button id="boi-turn-left" type="button" class="btn btn-pill btn-ghost">Turn Left</button>
+                                <button id="boi-turn-right" type="button" class="btn btn-pill btn-ghost">Turn Right</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">Morphs</h3>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-morph-reset" class="btn btn-pill" type="button">Reset</button>
+                        <button id="boi-morph-random" class="btn btn-pill btn-ghost" type="button">Randomize</button>
+                        <button id="boi-morph-save" class="btn btn-pill btn-ghost" type="button">Save State</button>
+                        <button id="boi-morph-restore" class="btn btn-pill btn-ghost" type="button">Restore State</button>
+                    </div>
+                    <div id="boi-morph-list" class="boi-scroll-list"></div>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">Retarget / BVH</h3>
+                    <div class="control-group boi-switches">
+                        <button id="boi-retarget-selected" class="btn btn-pill" type="button">Retarget Selected Clip</button>
+                        <button id="boi-bvh-toggle" class="btn btn-pill btn-ghost" type="button">BVH Picking: ON</button>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="boi-catalog-bvh">BVH Library</label>
+                        <select id="boi-catalog-bvh" class="input-field"></select>
+                    </div>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-catalog-load-bvh" class="btn btn-pill" type="button">Load BVH As Source</button>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="boi-retarget-source-clip">Source Clip</label>
+                        <select id="boi-retarget-source-clip" class="input-field"></select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="boi-offset-bone">Bone Offset</label>
+                        <select id="boi-offset-bone" class="input-field"></select>
+                    </div>
+                    <div class="control-group" data-slider>
+                        <label class="control-label" for="boi-offset-x">Offset X (deg)</label>
+                        <div class="boi-control-row">
+                            <input id="boi-offset-x" type="range" class="slider" min="-180" max="180" value="0" />
+                            <span class="badge" data-output>0</span>
+                        </div>
+                    </div>
+                    <div class="control-group" data-slider>
+                        <label class="control-label" for="boi-offset-y">Offset Y (deg)</label>
+                        <div class="boi-control-row">
+                            <input id="boi-offset-y" type="range" class="slider" min="-180" max="180" value="0" />
+                            <span class="badge" data-output>0</span>
+                        </div>
+                    </div>
+                    <div class="control-group" data-slider>
+                        <label class="control-label" for="boi-offset-z">Offset Z (deg)</label>
+                        <div class="boi-control-row">
+                            <input id="boi-offset-z" type="range" class="slider" min="-180" max="180" value="0" />
+                            <span class="badge" data-output>0</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Retarget Report</label>
+                        <pre id="boi-retarget-report" class="boi-bio">No retarget operation yet.</pre>
+                    </div>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">Gizmo</h3>
+                    <div class="control-group boi-anim-row">
+                        <button id="boi-gizmo-translate" class="btn btn-pill" type="button">Translate</button>
+                        <button id="boi-gizmo-rotate" class="btn btn-pill btn-ghost" type="button">Rotate</button>
+                        <button id="boi-gizmo-scale" class="btn btn-pill btn-ghost" type="button">Scale</button>
+                        <button id="boi-gizmo-reset" class="btn btn-pill btn-ghost" type="button">Reset Transform</button>
+                    </div>
+                    <div class="control-group" data-slider>
+                        <label class="control-label" for="boi-snap-translate">Snap Translate (cm)</label>
+                        <div class="boi-control-row">
+                            <input id="boi-snap-translate" type="range" class="slider" min="0" max="100" value="0" />
+                            <span class="badge" data-output>0</span>
+                        </div>
+                    </div>
+                    <div class="control-group" data-slider>
+                        <label class="control-label" for="boi-snap-rotate">Snap Rotate (deg)</label>
+                        <div class="boi-control-row">
+                            <input id="boi-snap-rotate" type="range" class="slider" min="0" max="90" value="0" />
+                            <span class="badge" data-output>0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">Export / Import</h3>
+                    <div class="control-group boi-switches">
+                        <button id="boi-export-json" class="btn btn-pill" type="button">Export Editor JSON</button>
+                        <button id="boi-export-glb" class="btn btn-pill btn-ghost" type="button">Export Baked GLB</button>
+                        <button id="boi-import-json" class="btn btn-pill btn-ghost" type="button">Import Setup JSON</button>
+                        <input id="boi-import-json-file" type="file" accept=".json" hidden />
+                    </div>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">Log / Errors</h3>
+                    <pre id="boi-log" class="boi-log"></pre>
+                </div>
+
+                <div class="placeholder-panel boi-subpanel">
+                    <h3 class="section-title">README</h3>
+                    <div class="control-label">
+                        <p>1) Load your Mixamo avatar from <strong>Cargar FBX local</strong> or drag/drop GLB/FBX into viewport.</p>
+                        <p>2) Load extra animation files with <strong>Cargar animación</strong>. If skeletons differ, use <strong>Retarget Selected Clip</strong>.</p>
+                        <p>3) Build blends in <strong>Layer Stack</strong> using per-layer masks and weights.</p>
+                        <p>4) Morph targets auto-populate in <strong>Morphs</strong>; save or restore a morph state.</p>
+                        <p>5) Export full setup as editor-compatible JSON or bake stack to GLB.</p>
+                        <p>Known limits: retargeting is Mixamo-oriented and may need manual bone offsets for non-standard rigs; baked GLB samples at 30 FPS by default.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="placeholder-panel boi-viewport-panel">
+                <h2>Viewport</h2>
+                <p class="control-label boi-hint">Arrastra para orbitar, rueda para zoom.</p>
+                <div id="boi-view" class="boi-view"></div>
+                <p class="control-label boi-drop-hint">Drop GLB/GLTF/FBX files anywhere on this panel.</p>
+            </section>
+        </div>
+    </main>
+    <script src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/create-boi-editor.js"></script>
+</body>
+</html>

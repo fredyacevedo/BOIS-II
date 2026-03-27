@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOIS UI Kit - B器IS_ Node System</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-color: #ffffff;
+            --active-accent: #ffffff;
+            --muted-text: rgba(255, 255, 255, 0.4);
+            --font-technical: "JetBrains Mono", "Inter", monospace;
+            --panel-radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            font-family: var(--font-technical);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            display: flex;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, #333 0%, #111 100%);
+            z-index: -1;
+        }
+
+        /* LIENZO DE MORPHING (Basado en Referencia de Nodos) */
+        .viewport {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+        }
+
+        .node-canvas {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid-circle {
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+        }
+
+        .axis-label {
+            position: absolute;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--muted-text);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .node-anchor {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+        }
+
+        /* NODO INTERACTIVO CENTRAL */
+        .morph-handle {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid white;
+            border-radius: 50%;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            z-index: 100;
+            transition: transform 0.1s ease;
+        }
+
+        .morph-handle::after {
+            content: "";
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* PANEL LATERAL DE SÍNTESIS */
+        .side-panel {
+            width: 400px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(30px);
+            border-left: 1px solid var(--glass-border);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            overflow-y: auto;
+        }
+
+        .header-meta {
+            margin-bottom: 20px;
+        }
+
+        .header-meta h1 {
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 4px;
+        }
+
+        .header-meta span {
+            font-size: 10px;
+            color: var(--muted-text);
+        }
+
+        /* MÓDULOS DE DATOS */
+        .data-module {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .module-tag {
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--muted-text);
+            text-transform: uppercase;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .synth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .synth-item {
+            padding: 12px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .synth-item .val { font-weight: bold; color: white; }
+        .synth-item .key { color: var(--muted-text); font-size: 9px; }
+
+        /* VISUALIZADOR DE ADN (TSUZURI ENGINE) */
+        .dna-matrix {
+            height: 80px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+        }
+
+        .dna-bar {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1px;
+            transition: height 0.2s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+
+        /* CONTROL DE SLIDERS TÉCNICOS */
+        .tech-slider {
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .tech-slider-fill {
+            position: absolute;
+            height: 100%;
+            background: white;
+            left: 0;
+        }
+
+        .btn-group {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-main {
+            padding: 16px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        .btn-sub {
+            padding: 12px;
+            background: none;
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+
+    <main class="viewport">
+        <div class="axis-label" style="top: -40px;">Estructura_Ósea_01</div>
+        <div class="axis-label" style="bottom: -40px;">Masa_Adiposa_04</div>
+        <div class="axis-label" style="left: -120px; transform: rotate(-90deg);">Rigidez_Tensional</div>
+        <div class="axis-label" style="right: -120px; transform: rotate(90deg);">Suavidad_Orgánica</div>
+
+        <div class="node-canvas" id="canvas">
+            <div class="grid-circle" style="width: 25%; height: 25%;"></div>
+            <div class="grid-circle" style="width: 50%; height: 50%;"></div>
+            <div class="grid-circle" style="width: 75%; height: 75%;"></div>
+            
+            <div class="node-anchor" style="top: 0; left: 50%; transform: translateX(-50%);"></div>
+            <div class="node-anchor" style="bottom: 0; left: 50%; transform: translateX(-50%);"></div>
+            <div class="node-anchor" style="left: 0; top: 50%; transform: translateY(-50%);"></div>
+            <div class="node-anchor" style="right: 0; top: 50%; transform: translateY(-50%);"></div>
+
+            <div class="morph-handle" id="handle" style="top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+        </div>
+    </main>
+
+    <aside class="side-panel">
+        <header class="header-meta">
+            <span>MOTOR_PROCEDURAL_綴_V4</span>
+            <h1>B器IS_ CONSTRUCTOR</h1>
+        </header>
+
+        <section class="data-module">
+            <div class="module-tag">DNA_SYNTHESIS_REPORT</div>
+            <div class="dna-matrix" id="dna-matrix"></div>
+            <div style="display: flex; justify-content: space-between; font-size: 8px; color: var(--muted-text);">
+                <span>FRAG_A</span>
+                <span>GEN_BUFFER</span>
+                <span>CORE_STABILITY</span>
+            </div>
+        </section>
+
+        <section class="data-module">
+            <div class="module-tag">VALORES_DE_ENTIDAD</div>
+            <div class="synth-grid">
+                <div class="synth-item">
+                    <span class="key">MORFOLOGÍA</span>
+                    <span class="val" id="morph-val">ANDRÓGINO</span>
+                </div>
+                <div class="synth-item">
+                    <span class="key">DENSIDAD</span>
+                    <span class="val" id="dens-val">42.8%</span>
+                </div>
+                <div class="synth-item">
+                    <span class="key">TENSIÓN</span>
+                    <span class="val" id="tens-val">BAJA</span>
+                </div>
+                <div class="synth-item">
+                    <span class="key">ESTABILIDAD</span>
+                    <span class="val">99.2%</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="data-module">
+            <div class="module-tag">MICRO_AJUSTES_PROCEDURALES</div>
+            <div class="data-module">
+                <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                    <span>Definición Muscular</span>
+                    <span id="slide-val-1">54%</span>
+                </div>
+                <div class="tech-slider"><div class="tech-slider-fill" id="slide-fill-1" style="width: 54%;"></div></div>
+            </div>
+            <div class="data-module">
+                <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                    <span>Prominencia Vascular</span>
+                    <span id="slide-val-2">12%</span>
+                </div>
+                <div class="tech-slider"><div class="tech-slider-fill" id="slide-fill-2" style="width: 12%;"></div></div>
+            </div>
+        </section>
+
+        <div class="btn-group">
+            <button class="btn-sub">Aleatorizar Semilla</button>
+            <button class="btn-main">Sintetizar B器IS_</button>
+        </div>
+    </aside>
+
+    <script>
+        const handle = document.getElementById('handle');
+        const canvas = document.getElementById('canvas');
+        const dnaMatrix = document.getElementById('dna-matrix');
+        let dragging = false;
+
+        // Inicialización de matriz de ADN
+        for(let i=0; i<32; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'dna-bar';
+            bar.style.height = Math.random() * 100 + '%';
+            dnaMatrix.appendChild(bar);
+        }
+
+        function updateDNA() {
+            document.querySelectorAll('.dna-bar').forEach(bar => {
+                bar.style.height = (20 + Math.random() * 80) + '%';
+                bar.style.background = `rgba(255,255,255, ${0.1 + Math.random() * 0.4})`;
+            });
+        }
+
+        handle.addEventListener('mousedown', () => dragging = true);
+        window.addEventListener('mouseup', () => dragging = false);
+
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+
+            const rect = canvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+
+            // Constrain circular
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const dist = Math.sqrt((x - centerX)**2 + (y - centerY)**2);
+            const radius = rect.width / 2;
+
+            if (dist > radius) {
+                const angle = Math.atan2(y - centerY, x - centerX);
+                x = centerX + radius * Math.cos(angle);
+                y = centerY + radius * Math.sin(angle);
+            }
+
+            handle.style.left = `${(x / rect.width) * 100}%`;
+            handle.style.top = `${(y / rect.height) * 100}%`;
+
+            // Lógica de traducción de valores (Normalizados -1 a 1)
+            const normX = (x - centerX) / radius;
+            const normY = (y - centerY) / radius;
+
+            // Actualizar interfaz técnica
+            updateDNA();
+            
+            const dens = Math.abs(normY * 100).toFixed(1);
+            document.getElementById('dens-val').textContent = dens + '%';
+            
+            // Lógica de etiquetas dinámicas basada en GDD
+            const morph = normX > 0.5 ? "ECTOMORFO" : (normX < -0.5 ? "MESOMORFO" : "ANDRÓGINO");
+            document.getElementById('morph-val').textContent = morph;
+
+            const tension = normY < -0.3 ? "ALTA" : "BAJA";
+            document.getElementById('tens-val').textContent = tension;
+
+            // Sliders automáticos vinculados al nodo
+            const s1 = Math.round(Math.abs(normX) * 100);
+            document.getElementById('slide-val-1').textContent = s1 + '%';
+            document.getElementById('slide-fill-1').style.width = s1 + '%';
+
+            const s2 = Math.round(Math.abs(normY) * 100);
+            document.getElementById('slide-val-2').textContent = s2 + '%';
+            document.getElementById('slide-fill-2').style.width = s2 + '%';
+        });
+    </script>
+</body>
+</html>

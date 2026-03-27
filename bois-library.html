@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOIS GUI - BOIS Library</title>
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="stylesheet" href="assets/css/components.css" />
+    <link rel="stylesheet" href="assets/css/pages.css" />
+</head>
+<body class="page fade-in" data-page="bois-library">
+    <div class="background"></div>
+    <main class="content-screen">
+        <div class="content-header">
+            <h1>BOIS Library</h1>
+            <div class="boi-header-actions">
+                <span id="boi-library-count" class="badge">0 BOIS</span>
+                <a class="btn btn-primary" href="main-menu.html">Back</a>
+            </div>
+        </div>
+        <div class="boi-library-layout">
+            <section class="placeholder-panel">
+                <div class="control-group">
+                    <label class="control-label" for="boi-library-filter">Filter BOI by name</label>
+                    <input id="boi-library-filter" class="input-field" type="text" placeholder="Type Franko, test, mixamo..." />
+                </div>
+                <div id="boi-library-grid" class="grid-container"></div>
+            </section>
+
+            <aside class="placeholder-panel boi-library-detail">
+                <h2 id="boi-library-name">Select a BOI</h2>
+                <p id="boi-library-model" class="control-label">Model path will appear here.</p>
+                <div class="boi-anim-row">
+                    <a id="boi-library-open-create" class="btn btn-primary" href="create-boi.html">Open In Creator</a>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Default Animations</label>
+                    <div id="boi-library-animations" class="boi-scroll-list"></div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Bio</label>
+                    <pre id="boi-library-bio" class="boi-bio">No BOI selected.</pre>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">BOI Stats Nodes</label>
+                    <div id="boi-library-stats" class="boi-library-stats"></div>
+                </div>
+            </aside>
+        </div>
+        <div class="placeholder-panel boi-subpanel">
+            <h3 class="section-title">Notes</h3>
+            <div class="control-label">
+                <p>This library is fed by assets/data/bois-manifest.json.</p>
+                <p>Add new Mixamo T-Pose models there to scale your roster without touching JS code.</p>
+            </div>
+        </div>
+    </main>
+    <script src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/bois-library.js"></script>
+</body>
+</html>

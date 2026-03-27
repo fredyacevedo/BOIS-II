@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "defaultModelId": "franko",
+  "models": [
+    {
+      "id": "franko",
+      "name": "Franko",
+      "modelPath": "./utsuwa_3d/Franko_mixamo_T-Pose.fbx",
+      "bioPath": "./utsuwa_3d/bio_franko.txt",
+      "defaultAnimations": [
+        "./utsuwa_3d/anim_bois/Franko_mixamo_Breathing Idle.fbx",
+        "./utsuwa_3d/anim_bois/Franko_mixamo_Looking Around.fbx",
+        "./utsuwa_3d/anim_bois/Franko_mixamo_Looking Behind.fbx",
+        "./utsuwa_3d/anim_bois/Franko_mixamo_Neutral Idle.fbx"
+      ]
+    },
+    {
+      "id": "test_boi",
+      "name": "TEST_BOI_3D",
+      "modelPath": "./utsuwa_3d/TEST_BOI_3D.fbx",
+      "defaultAnimations": []
+    }
+  ],
+  "animationLibrary": [
+    {
+      "id": "franko_breathing_idle",
+      "name": "Breathing Idle",
+      "path": "./utsuwa_3d/anim_bois/Franko_mixamo_Breathing Idle.fbx"
+    },
+    {
+      "id": "franko_looking_around",
+      "name": "Looking Around",
+      "path": "./utsuwa_3d/anim_bois/Franko_mixamo_Looking Around.fbx"
+    },
+    {
+      "id": "franko_looking_behind",
+      "name": "Looking Behind",
+      "path": "./utsuwa_3d/anim_bois/Franko_mixamo_Looking Behind.fbx"
+    },
+    {
+      "id": "franko_neutral_idle",
+      "name": "Neutral Idle",
+      "path": "./utsuwa_3d/anim_bois/Franko_mixamo_Neutral Idle.fbx"
+    }
+  ],
+  "bvhLibrary": [
+    {
+      "id": "bvh_acknowledging",
+      "name": "Acknowledging",
+      "path": "./LIB/BVH/BVH_Animations_Mixamo_No Character/acknowledging.bvh"
+    },
+    {
+      "id": "bvh_agreeing",
+      "name": "Agreeing",
+      "path": "./LIB/BVH/BVH_Animations_Mixamo_No Character/agreeing.bvh"
+    },
+    {
+      "id": "bvh_angry_gesture",
+      "name": "Angry Gesture",
+      "path": "./LIB/BVH/BVH_Animations_Mixamo_No Character/angry_gesture.bvh"
+    },
+    {
+      "id": "bvh_asking_question",
+      "name": "Asking Question",
+      "path": "./LIB/BVH/BVH_Animations_Mixamo_No Character/asking_question.bvh"
+    },
+    {
+      "id": "bvh_backflip",
+      "name": "Backflip",
+      "path": "./LIB/BVH/BVH_Animations_Mixamo_No Character/backflip.bvh"
+    },
+    {
+      "id": "bvh_bboy_hip_hop_move",
+      "name": "Bboy Hip Hop Move",
+      "path": "./LIB/BVH/BVH_Animations_Mixamo_No Character/bboy_hip_hop_move.bvh"
+    }
+  ]
+}
